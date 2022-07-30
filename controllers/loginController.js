@@ -44,20 +44,6 @@ export const handleLogin = async (req, res) => {
     },
     { expiresIn: "1d" }
   );
-  // const refreshToken = generateRefreshToken(
-  //   {
-  //     userId: foundUser.user_id,
-  //     username: foundUser.username,
-  //     isAdmin: foundUser.is_admin,
-  //   },
-  //   { expiresIn: "1d" }
-  // );
-
-  // // maxAge: one day in milliseconds
-  // res.cookie("token", accessToken, {
-  //   httpOnly: true,
-  //   maxAge: 24 * 60 * 60 * 1000,
-  // });
   const responseCode = status.OK;
   return res.status(responseCode).send({
     message: status[responseCode],
