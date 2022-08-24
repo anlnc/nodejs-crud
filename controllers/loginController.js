@@ -1,7 +1,7 @@
 import { compare } from "bcrypt";
 import status from "http-status";
 import { PrismaClient } from "@prisma/client";
-import { generateAccessToken, generateRefreshToken } from "../functions/jwt.js";
+import { generateAccessToken } from "../functions/jwt.js";
 
 export const handleLogin = async (req, res) => {
   const { username, password } = req.body;
@@ -13,6 +13,19 @@ export const handleLogin = async (req, res) => {
     });
   }
   const prisma = new PrismaClient();
+  try {
+    await prisma.$connect();
+  } catch (error) {
+    console.error(`[ERROR] ${error.message}`);
+    await prisma.$disconnect();
+
+    const responseCode = status.INTERNAL_SERVER_ERROR;
+    return res.status(responseCode).send({
+      message: status[responseCode],
+      code: responseCode,
+    });
+  }
+
   const foundUser = await prisma.user.findUnique({
     where: {
       username,
@@ -40,10 +53,17 @@ export const handleLogin = async (req, res) => {
     {
       userId: foundUser.user_id,
       username: foundUser.username,
-      isAdmin: foundUser.is_admin,
     },
     { expiresIn: "1d" }
   );
+
+  res.cookie("token", accessToken, {
+    // httpOnly: true,
+    httpOnly: false,
+    sameSite: "None",
+    secure: true,
+    maxAge: 1 * 24 * 60 * 60 * 1000,
+  });
   const responseCode = status.OK;
   return res.status(responseCode).send({
     message: status[responseCode],

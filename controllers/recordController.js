@@ -2,23 +2,6 @@ import fs from "fs";
 import status from "http-status";
 import { PrismaClient } from "@prisma/client";
 
-// const getRecordById = async (req, res) => {
-//   const {
-//     params: { id: postId },
-//   } = req;
-//   const post = posts.find((post) => post.post_id === postId);
-//   if (!post) {
-//     const responseCode = status.NOT_FOUND;
-//     return res.status(responseCode).send({
-//       message: status[responseCode],
-//       code: responseCode,
-//     });
-//   }
-//   return res.send({
-//     post,
-//   });
-// };
-
 const getAllRecords = async (req, res, next) => {
   const { userId, isAdmin } = req.user;
   const prisma = new PrismaClient();
@@ -29,6 +12,9 @@ const getAllRecords = async (req, res, next) => {
       };
   const records = await prisma.record.findMany({
     where: condition,
+    include: {
+      owner: true,
+    },
   });
   await prisma.$disconnect();
   return res.send({

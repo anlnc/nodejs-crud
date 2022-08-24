@@ -13,6 +13,18 @@ const PORT = process.env.PORT || 3500;
 const app = express();
 
 // Middleware
+// const WHITE_LIST = ["http://localhost:3000"];
+// const corsOptions = {
+//   origin: (origin, callback) => {
+//     if (origin && !WHITE_LIST.includes(origin)) {
+//       return callback(new Error("NOT ALLOWED"));
+//     }
+//     callback(null, true);
+//   },
+//   credentials: true,
+//   optionsSuccessStatus: 200,
+// };
+// app.use(cors(corsOptions));
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
