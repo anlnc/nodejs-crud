@@ -16,9 +16,10 @@ const app = express();
 const WHITE_LIST = ["http://localhost:3000"];
 const corsOptions = {
   origin: (origin, callback) => {
-    if (origin && !WHITE_LIST.includes(origin)) {
-      return callback(new Error("NOT ALLOWED"));
-    }
+    // if (origin && !WHITE_LIST.includes(origin)) {
+    //   return callback(new Error("NOT ALLOWED"));
+    // }
+    console.log("[INFO] History access: ", { origin });
     callback(null, true);
   },
   credentials: true,
