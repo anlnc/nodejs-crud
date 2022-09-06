@@ -1,5 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
 
 generator client {
   provider = "prisma-client-js"
@@ -10,6 +11,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+<<<<<<< Updated upstream
 
 model User {
   user_id      String      @id @default(uuid())
@@ -36,3 +38,42 @@ model Record {
   @@map("records")
 }
 
+=======
+model groups {
+  group_id   String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  group_name String
+  created_at DateTime   @default(now()) @db.Date
+  deleted_at DateTime?  @db.Date
+  deleted_by String?    @db.Uuid
+  projects   projects[]
+  users      users[]
+}
+
+model projects {
+  project_id String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title      String
+  content    String
+  created_at DateTime  @default(now()) @db.Date
+  deleted_at DateTime? @db.Date
+  deleted_by String?   @db.Uuid
+  updated_at DateTime? @db.Date
+  user_id    String    @db.Uuid
+  info       Json?
+  group_id   String    @db.Uuid
+  groups     groups    @relation(fields: [group_id], references: [group_id], onDelete: Cascade)
+  users      users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
+
+model users {
+  user_id    String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email      String     @unique
+  password   String
+  fullname   String
+  created_at DateTime   @default(now()) @db.Date
+  deleted_by String?    @db.Uuid
+  deleted_at DateTime?  @db.Date
+  group_id   String     @db.Uuid
+  groups     groups     @relation(fields: [group_id], references: [group_id], onDelete: Cascade)
+  projects   projects[]
+}
+>>>>>>> Stashed changes

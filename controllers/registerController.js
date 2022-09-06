@@ -1,13 +1,13 @@
 import { hash } from "bcrypt";
 import status from "http-status";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../functions/prisma.js";
 
 import * as dotenv from "dotenv";
 dotenv.config();
 
 export const handleRegister = async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
+  const { email, password, fullname, groupId } = req.body;
+  if (!email || !password || !fullname || !groupId) {
     const responseCode = status.BAD_REQUEST;
     return res.status(responseCode).send({
       message: status[responseCode],
@@ -17,14 +17,14 @@ export const handleRegister = async (req, res) => {
   const SALT = process.env.SALT;
   const hashedPassword = await hash(password, parseInt(SALT));
   const credentials = {
-    username,
+    email,
     password: hashedPassword,
-    fullname: password,
+    fullname,
+    group_id: groupId,
   };
-  const prisma = new PrismaClient();
   let responseCode;
   try {
-    await prisma.user.create({
+    await prisma.users.create({
       data: credentials,
     });
     responseCode = status.CREATED;
@@ -33,10 +33,11 @@ export const handleRegister = async (req, res) => {
     if (error.code === "P2002") {
       responseCode = status.CONFLICT;
     } else {
+      await prisma.$disconnect();
+      console.error("Unsuccessfully Created: ", error.message);
       responseCode = status.INTERNAL_SERVER_ERROR;
     }
   }
-  await prisma.$disconnect();
   return res.status(responseCode).send({
     message: status[responseCode],
     code: responseCode,

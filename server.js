@@ -1,6 +1,6 @@
 import express from "express";
 import loginRoute from "./routes/login.js";
-import records from "./routes/records.js";
+import projects from "./routes/projects.js";
 import registerRoute from "./routes/register.js";
 import mainRoute from "./routes/index.js";
 import cors from "cors";
@@ -33,7 +33,7 @@ app.use(express.json());
 // Routes
 app.use("/", mainRoute);
 app.use("/login", loginRoute);
-app.use("/records", records);
+app.use("/projects", projects);
 app.use("/register", registerRoute);
 
 app.listen(PORT, () =>

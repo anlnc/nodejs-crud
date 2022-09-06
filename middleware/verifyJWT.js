@@ -16,11 +16,8 @@ export const verifyJWT = (req, res, next) => {
     });
   }
   try {
-    const { userId, username, isAdmin } = jwt.verify(
-      token,
-      ACCESS_TOKEN_SECRET
-    );
-    req.user = { userId, username, isAdmin };
+    const { userId, groupId } = jwt.verify(token, ACCESS_TOKEN_SECRET);
+    req.user = { userId, groupId };
     next();
   } catch (exception) {
     const responseCode = status.FORBIDDEN;

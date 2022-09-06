@@ -1,5 +1,5 @@
 import express from "express";
-import recordController from "../controllers/recordController.js";
+import recordController from "../controllers/projectsController.js";
 import { verifyJWT } from "../middleware/verifyJWT.js";
 
 const router = express.Router();

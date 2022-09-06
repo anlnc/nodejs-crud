@@ -1,24 +1,27 @@
 import { compare } from "bcrypt";
 import status from "http-status";
-import { PrismaClient } from "@prisma/client";
 import { generateAccessToken } from "../functions/jwt.js";
+import prisma from "../functions/prisma.js";
 
 export const handleLogin = async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
+  const { email, password } = req.body;
+  if (!email || !password) {
     const responseCode = status.BAD_REQUEST;
     return res.status(responseCode).send({
       message: status[responseCode],
       code: responseCode,
     });
   }
-  const prisma = new PrismaClient();
+  let foundUser;
   try {
-    await prisma.$connect();
+    foundUser = await prisma.users.findUnique({
+      where: {
+        email,
+      },
+    });
   } catch (error) {
-    console.error(`[ERROR] ${error.message}`);
     await prisma.$disconnect();
-
+    console.error(`[ERROR] ${error.message}`);
     const responseCode = status.INTERNAL_SERVER_ERROR;
     return res.status(responseCode).send({
       message: status[responseCode],
@@ -26,12 +29,6 @@ export const handleLogin = async (req, res) => {
     });
   }
 
-  const foundUser = await prisma.user.findUnique({
-    where: {
-      username,
-    },
-  });
-  await prisma.$disconnect();
   if (!foundUser) {
     const responseCode = status.NOT_FOUND;
     return res.status(responseCode).send({
@@ -48,26 +45,21 @@ export const handleLogin = async (req, res) => {
       code: responseCode,
     });
   }
-
+  const userId = foundUser.user_id;
+  const groupId = foundUser.group_id;
   const accessToken = generateAccessToken(
     {
-      userId: foundUser.user_id,
-      username: foundUser.username,
+      userId,
+      groupId,
     },
     { expiresIn: "1d" }
   );
 
-  res.cookie("token", accessToken, {
-    // httpOnly: true,
-    httpOnly: false,
-    sameSite: "None",
-    secure: true,
-    maxAge: 1 * 24 * 60 * 60 * 1000,
-  });
   const responseCode = status.OK;
   return res.status(responseCode).send({
     message: status[responseCode],
     code: responseCode,
     accessToken,
+    userId,
   });
 };
