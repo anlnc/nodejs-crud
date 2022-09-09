@@ -1,3 +1,3 @@
 web: npm start
 
-release: prisma generate
+release: prisma migrate resolve --applied 20220730094246_change_field_name
