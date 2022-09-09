@@ -19,7 +19,7 @@ const corsOptions = {
     // if (origin && !WHITE_LIST.includes(origin)) {
     //   return callback(new Error("NOT ALLOWED"));
     // }
-    console.log("[INFO] History access: ", { origin });
+    // console.log("[INFO] History access: ", { origin });
     callback(null, true);
   },
   credentials: true,
