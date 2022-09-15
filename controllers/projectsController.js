@@ -56,7 +56,7 @@ const createRecord = async (req, res, next) => {
 
     await BPromise.mapSeries(files, async (file) => {
       const { fileName, base64 } = file;
-      await uploadFileToS3({ fileKey: `${projectId}/${fileName}`, base64 });
+      await uploadFileToS3({ fileKey: `${fileName}`, base64 });
     });
 
     const statusCode = status.CREATED;
