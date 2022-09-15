@@ -54,14 +54,10 @@ const createRecord = async (req, res, next) => {
       data: data,
     });
 
-    await BPromise.map(
-      files,
-      async (file) => {
-        const { fileName, base64 } = file;
-        await uploadFileToS3({ fileKey: `${projectId}/${fileName}`, base64 });
-      },
-      { concurrency: 4 }
-    );
+    await BPromise.mapSeries(files, async (file) => {
+      const { fileName, base64 } = file;
+      await uploadFileToS3({ fileKey: `${projectId}/${fileName}`, base64 });
+    });
 
     const statusCode = status.CREATED;
     return res.send({
@@ -70,11 +66,11 @@ const createRecord = async (req, res, next) => {
       data,
     });
   } catch (error) {
+    // delde created projected
     const statusCode = status.INTERNAL_SERVER_ERROR;
-    return res.send({
+    return res.status(statusCode).send({
       code: statusCode,
       message: JSON.stringify(error.message),
-      data,
     });
   }
 };

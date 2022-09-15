@@ -29,6 +29,7 @@ const uploadFileToS3 = async ({ fileKey, base64 }) => {
     console.log("FILE UPLOADED: ", response);
   } catch (error) {
     console.error("COULD NOT UPLOAD TO S3: ", error.message);
+    throw new Error(`COULD NOT UPLOAD TO S3: ${error.message}`);
   }
 };
 
