@@ -22,6 +22,8 @@ const uploadFileToS3 = async ({ fileKey, base64 }) => {
     Key: fileKey,
     Body: fileContent,
   };
+
+  console.log({ Bucket: process.env.AWS_BUCKET_NAME, Key: fileKey });
   // console.log(params);
 
   try {
