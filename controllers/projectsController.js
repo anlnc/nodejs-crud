@@ -1,5 +1,7 @@
+import BPromise from "bluebird";
 import status from "http-status";
 import prisma from "../functions/prisma.js";
+import uploadFileToS3 from "../functions/uploadFileToS3.js";
 
 const getAllRecords = async (req, res, next) => {
   const { groupId } = req.user;
@@ -32,16 +34,34 @@ const getAllRecords = async (req, res, next) => {
 
 const createRecord = async (req, res, next) => {
   const { userId, groupId } = req.user;
-  const { title, content } = req.body;
+  const { title, content, files = [] } = req.body;
+  const info = files.map((file) => {
+    const { fileName, description } = file;
+    return {
+      fileName,
+      description,
+    };
+  });
   const data = {
     content,
     title,
     user_id: userId,
     group_id: groupId,
+    info,
   };
-  await prisma.projects.create({
+  const { project_id: projectId } = await prisma.projects.create({
     data: data,
   });
+
+  BPromise.map(
+    files,
+    async (file) => {
+      const { fileName, base64 } = file;
+      await uploadFileToS3({ fileKey: `${projectId}/${fileName}`, base64 });
+    },
+    { concurrency: 4 }
+  );
+
   const statusCode = status.CREATED;
   return res.send({
     code: statusCode,
