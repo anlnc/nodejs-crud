@@ -12,18 +12,14 @@ dotenv.config();
 const s3 = new AWS.S3();
 // console.log(AWS.config);
 
-const uploadFileToS3 = async ({ fileKey, base64 }) => {
-  const fileContent = Buffer.from(
-    base64.toString().replace(/^data:\w+\/.+?;base64,/, ""),
-    "base64"
-  );
+const uploadFileToS3 = async ({ fileKey, buffer }) => {
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: fileKey,
-    Body: fileContent,
+    Body: buffer,
   };
 
-  console.log({ Bucket: process.env.AWS_BUCKET_NAME, Key: fileKey });
+  // console.log({ Bucket: process.env.AWS_BUCKET_NAME, Key: fileKey });
   // console.log(params);
 
   try {

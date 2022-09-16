@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^4.3.0",
+    "adm-zip": "^0.5.9",
     "aws-sdk": "^2.1214.0",
     "bcrypt": "^5.0.1",
     "bluebird": "^3.7.2",
