@@ -16,6 +16,7 @@ const getAllRecords = async (req, res, next) => {
   const projects = await prisma.projects.findMany({
     where: condition,
     select: {
+      project_id: true,
       title: true,
       content: true,
       created_at: true,
@@ -104,7 +105,50 @@ const createRecord = async (req, res, next) => {
   }
 };
 
+const getRecordById = async (req, res, next) => {
+  // @TODO: Validate if projectId is uuid
+  // @TODO: Check if user trying to fetch a project that is not owned by him/her
+  const { projectId } = req.params;
+  if (!projectId) {
+    const statusCode = status.BAD_REQUEST;
+    return res.status(statusCode).send({
+      code: statusCode,
+      message: status[statusCode],
+    });
+  }
+  const project = await prisma.projects.findUnique({
+    where: {
+      project_id: projectId,
+    },
+    select: {
+      project_id: true,
+      title: true,
+      content: true,
+      created_at: true,
+      info: true,
+      users: {
+        select: {
+          user_id: true,
+          fullname: true,
+        },
+      },
+    },
+  });
+  if (!project) {
+    const statusCode = status.NOT_FOUND;
+    return res.status(statusCode).send({
+      code: statusCode,
+      message: status[statusCode],
+    });
+  }
+  return res.send({
+    code: 200,
+    project,
+  });
+};
+
 export default {
   getAllRecords,
   createRecord,
+  getRecordById,
 };

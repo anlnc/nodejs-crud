@@ -4,6 +4,7 @@ import { verifyJWT } from "../middleware/verifyJWT.js";
 
 const router = express.Router();
 
+router.route("/:projectId").get(verifyJWT, recordController.getRecordById);
 router.route("/").get(verifyJWT, recordController.getAllRecords);
 router.route("/").post(verifyJWT, recordController.createRecord);
 

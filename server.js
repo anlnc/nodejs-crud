@@ -2,6 +2,7 @@ import express from "express";
 import loginRoute from "./routes/login.js";
 import projects from "./routes/projects.js";
 import registerRoute from "./routes/register.js";
+import downloadRoute from "./routes/download.js";
 import mainRoute from "./routes/index.js";
 import cors from "cors";
 
@@ -34,6 +35,7 @@ app.use("/", mainRoute);
 app.use("/login", loginRoute);
 app.use("/projects", projects);
 app.use("/register", registerRoute);
+app.use("/download", downloadRoute);
 
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}/`)
