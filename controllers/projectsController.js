@@ -83,7 +83,7 @@ const createRecord = async (req, res, next) => {
     await fs.promises.rm(BASE_FOLDER, { recursive: true });
 
     const statusCode = status.CREATED;
-    return res.send({
+    return res.status(statusCode).send({
       code: statusCode,
       message: status[statusCode],
       data,
