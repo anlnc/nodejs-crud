@@ -4,6 +4,8 @@ import AdmZip from "adm-zip";
 import prisma from "../functions/prisma.js";
 import uploadFileToS3 from "../functions/uploadFileToS3.js";
 import fs from "fs";
+import { listObjects } from "../libs/s3.js";
+import { isFile, isRootFolder } from "../utils/index.js";
 
 const getAllRecords = async (req, res, next) => {
   const { groupId } = req.user;
@@ -116,34 +118,26 @@ const getRecordById = async (req, res, next) => {
       message: status[statusCode],
     });
   }
-  const project = await prisma.projects.findUnique({
-    where: {
-      project_id: projectId,
-    },
-    select: {
-      project_id: true,
-      title: true,
-      content: true,
-      created_at: true,
-      info: true,
-      users: {
-        select: {
-          user_id: true,
-          fullname: true,
-        },
-      },
-    },
-  });
-  if (!project) {
-    const statusCode = status.NOT_FOUND;
-    return res.status(statusCode).send({
-      code: statusCode,
-      message: status[statusCode],
-    });
-  }
+
+  const objects = await listObjects(projectId);
+  const dispatch = {
+    files: [],
+    folders: [],
+  };
+  objects.reduce((dispatch, object) => {
+    const { Key: objectKey } = object;
+    if (!isRootFolder(objectKey)) {
+      isFile(objectKey)
+        ? dispatch.files.push({ title: objectKey })
+        : dispatch.folders.push({ title: objectKey });
+    }
+
+    return dispatch;
+  }, dispatch);
+
   return res.send({
     code: 200,
-    project,
+    dispatch,
   });
 };
 
