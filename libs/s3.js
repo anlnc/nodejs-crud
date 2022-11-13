@@ -13,7 +13,6 @@ const s3 = new AWS.S3();
 // console.log(AWS.config);
 
 export const listObjects = async (projectId) => {
-  console.log({ projectId });
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME,
     Delimiter: "",
@@ -23,7 +22,22 @@ export const listObjects = async (projectId) => {
     const response = await s3.listObjects(params).promise();
     return response.Contents;
   } catch (error) {
-    console.error("COULD NOT OBJECTS: ", error.message);
-    throw new Error(`COULD NOT OBJECTS: ${error.message}`);
+    console.error("COULD NOT GET OBJECTS: ", error.message);
+    throw new Error(`COULD NOT GET OBJECTS: ${error.message}`);
+  }
+};
+
+export const downloadObject = async (objectKey) => {
+  const params = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    Key: objectKey,
+  };
+
+  try {
+    const response = await s3.getObject(params).promise();
+    return response.Body;
+  } catch (error) {
+    console.error("COULD NOT DOWNLOADED FROM S3: ", error.message);
+    throw new Error(`COULD NOT DOWNLOADED FROM S3: ${error.message}`);
   }
 };

@@ -6,6 +6,6 @@ const router = express.Router();
 
 router
   .route("/:projectId")
-  .get(verifyJWT, downloadControler.downloadProjectById);
+  .get(verifyJWT, downloadControler.downloadObjectByObjectKey);
 
 export default router;

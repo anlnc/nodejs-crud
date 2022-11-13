@@ -128,8 +128,8 @@ const getRecordById = async (req, res, next) => {
     const { Key: objectKey } = object;
     if (!isRootFolder(objectKey)) {
       isFile(objectKey)
-        ? dispatch.files.push({ title: objectKey })
-        : dispatch.folders.push({ title: objectKey });
+        ? dispatch.files.push({ objectKey })
+        : dispatch.folders.push({ objectKey });
     }
 
     return dispatch;
