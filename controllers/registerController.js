@@ -6,8 +6,8 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 export const handleRegister = async (req, res) => {
-  const { email, password, fullname, groupId } = req.body;
-  if (!email || !password || !fullname || !groupId) {
+  const { email, password, name, groupId, role } = req.body;
+  if (!email || !password || !name || !groupId || !role) {
     const responseCode = status.BAD_REQUEST;
     return res.status(responseCode).send({
       message: status[responseCode],
@@ -19,7 +19,8 @@ export const handleRegister = async (req, res) => {
   const credentials = {
     email,
     password: hashedPassword,
-    fullname,
+    name,
+    role,
     group_id: groupId,
   };
   let responseCode;

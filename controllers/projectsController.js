@@ -26,7 +26,7 @@ const getAllRecords = async (req, res, next) => {
       users: {
         select: {
           user_id: true,
-          fullname: true,
+          name: true,
         },
       },
     },
