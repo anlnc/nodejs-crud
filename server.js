@@ -3,6 +3,7 @@ import loginRoute from "./routes/login.js";
 import projects from "./routes/projects.js";
 import registerRoute from "./routes/register.js";
 import downloadRoute from "./routes/download.js";
+import conversationRoute from "./routes/conversation.js";
 import mainRoute from "./routes/index.js";
 import cors from "cors";
 
@@ -36,6 +37,7 @@ app.use("/login", loginRoute);
 app.use("/projects", projects);
 app.use("/register", registerRoute);
 app.use("/download", downloadRoute);
+app.use("/conversations", conversationRoute);
 
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}/`)

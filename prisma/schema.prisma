@@ -18,28 +18,44 @@ model groups {
 }
 
 model projects {
-  project_id String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id    String    @db.Uuid
-  title      String
-  content    String
-  created_at DateTime  @default(now()) @db.Date
-  deleted_at DateTime? @db.Date
-  deleted_by String?   @db.Uuid
-  users      users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  project_id    String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id       String          @db.Uuid
+  title         String
+  content       String
+  created_at    DateTime        @default(now()) @db.Date
+  deleted_at    DateTime?       @db.Date
+  deleted_by    String?         @db.Uuid
+  group_id      String          @db.Uuid
+  info          Json?
+  conversations conversations[]
+  users         users           @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model users {
-  user_id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  group_id       String     @db.Uuid
+  user_id        String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  group_id       String          @db.Uuid
   name           String
-  created_at     DateTime   @default(now()) @db.Date
-  deleted_at     DateTime?  @db.Date
-  is_active      Boolean    @default(true)
-  deactivated_by String?    @db.Uuid
-  deactivated_at DateTime?  @db.Date
+  created_at     DateTime        @default(now()) @db.Date
+  deleted_at     DateTime?       @db.Date
+  is_active      Boolean         @default(true)
+  deactivated_by String?         @db.Uuid
+  deactivated_at DateTime?       @db.Date
   role           String
-  email          String     @unique
+  email          String          @unique
   password       String
-  groups         groups     @relation(fields: [group_id], references: [group_id], onDelete: Cascade, onUpdate: NoAction)
+  conversations  conversations[]
   projects       projects[]
+  groups         groups          @relation(fields: [group_id], references: [group_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model conversations {
+  conversation_id String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  project_id      String    @db.Uuid
+  user_id         String    @db.Uuid
+  content         String
+  created_at      DateTime  @default(now()) @db.Date
+  deleted_at      DateTime? @db.Date
+  deleted_by      String?   @db.Uuid
+  projects        projects  @relation(fields: [project_id], references: [project_id], onDelete: Cascade, onUpdate: NoAction)
+  users           users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 }
